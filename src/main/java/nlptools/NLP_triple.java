@@ -1,6 +1,7 @@
 package nlptools;
 import edu.stanford.nlp.ie.util.RelationTriple;
 import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.naturalli.NaturalLogicAnnotations;
@@ -9,7 +10,9 @@ import edu.stanford.nlp.util.CoreMap;
 import edu.stanford.nlp.ie.util.RelationTriple;
 import edu.stanford.nlp.simple.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 public class NLP_triple {
     public static void main(String[] args) throws Exception {
@@ -25,6 +28,7 @@ public class NLP_triple {
         // Loop over sentences in the document
         for (CoreMap sentence : doc.get(CoreAnnotations.SentencesAnnotation.class)) {
             // Get the OpenIE triples for the sentence
+
             Collection<RelationTriple> triples =
                     sentence.get(NaturalLogicAnnotations.RelationTriplesAnnotation.class);
             // Print the triples
@@ -49,9 +53,14 @@ public class NLP_triple {
                         triple.objectLemmaGloss());
             }
         }
-
-
-
-
+        List<String> result = new ArrayList<>();
+        for (CoreMap sentence : doc.get(CoreAnnotations.SentencesAnnotation.class)){
+            for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)){
+                String word = token.get(CoreAnnotations.TextAnnotation.class);
+                result.add(word);
+                System.out.println(word);
+            }
+        }
     }
+
 }
