@@ -13,7 +13,7 @@ import java.util.*;
 
 public class KeywordsExtraction {
     private HashSet<String> commonWords;
-    private List<Map.Entry<String, Float>> result;
+    public List<Map.Entry<String, Float>> result;
     private ArrayList<String> paratexts;
     private String content;
     private Morphology mor;
@@ -85,7 +85,7 @@ public class KeywordsExtraction {
      */
     public HashSet<String> getKeywords(boolean isSummary){
         HashSet<String> keywords = new HashSet<>();
-        int number = 50;
+        int number = 20;
         int i = 0;
         int count = 0;
         if(!isSummary){
