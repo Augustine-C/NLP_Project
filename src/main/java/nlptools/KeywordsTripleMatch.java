@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class KeywordsTripleMatch {
 
         // Get a group of keywords
         KeywordsExtraction ke = new KeywordsExtraction(testPathString,true);
-        ArrayList<String> keywords = ke.getKeywords(20);
+        HashSet<String> keywords = ke.getKeywords(20);
 
         // Loop over sentences in the document
         for (CoreMap sentence : doc.get(CoreAnnotations.SentencesAnnotation.class)) {
