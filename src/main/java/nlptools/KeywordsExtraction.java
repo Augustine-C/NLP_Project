@@ -21,8 +21,8 @@ public class KeywordsExtraction {
 
     public static void main(String[] args) throws Exception {
         //System.out.println("!!!" + KeywordsExtraction.class.getResource("/test.txt").getPath());
-        KeywordsExtraction k = new KeywordsExtraction(KeywordsExtraction.class.getResource("/test.txt").getPath(), true);
-        Set<String> keywords = k.getKeywords(20);
+        KeywordsExtraction k = new KeywordsExtraction(KeywordsExtraction.class.getResource("/DeepBlue.txt").getPath(), true);
+        Set<String> keywords = k.getKeywords(false);
         for(String w : keywords){
             System.out.println(w);
         }
@@ -66,14 +66,14 @@ public class KeywordsExtraction {
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
         CoreDocument cdoc = new CoreDocument(content);
         pipeline.annotate(cdoc);
-        System.out.println("---");
-        System.out.println("entities found");
+        //System.out.println("---");
+        //System.out.println("entities found");
         for (CoreEntityMention em : cdoc.entityMentions()) {
             //result.add(em.text());
-            System.out.println("\tdetected entity: \t" + em.text() + "\t" + em.entityType());
+//            System.out.println("\tdetected entity: \t" + em.text() + "\t" + em.entityType());
             if(em.entityType().equals("PERSON") || em.entityType().equals("ORGANIZATION") ){
                 if(!commonWords.contains(em.text())) {
-                    System.out.println("\tdetected entity: \t" + em.text() + "\t" + em.entityType());
+//                    System.out.println("\tdetected entity: \t" + em.text() + "\t" + em.entityType());
                     result.add(em.text());
                 }
             }
@@ -83,18 +83,25 @@ public class KeywordsExtraction {
     /**
      *return most repeated top numbers of keywords plus special entity names including companies and human names
      */
-    public HashSet<String> getKeywords(int number){
+    public HashSet<String> getKeywords(boolean isSummary){
         HashSet<String> keywords = new HashSet<>();
+        int number = 50;
         int i = 0;
         int count = 0;
+        if(!isSummary){
+            System.out.println(Math.log(result.size()) + " " + result.size());
+            number += (Math.log(result.size()) * 10);
+        }
         while (count < number){
             String keyword = result.get(i).getKey();
             i++;
             try{
                 Integer.parseInt(keyword);
             } catch (NumberFormatException | NullPointerException nfe){
-                keywords.add(keyword);
-                count++;
+                if(keyword != null){
+                    keywords.add(keyword);
+                    count++;
+                }
             }
         }
         return keywords;
@@ -151,7 +158,7 @@ public class KeywordsExtraction {
         String regex0 = "[\\s\\p{Punct}]{2,}";
         s = s.replaceAll(regex0, ",");
         //System.out.println(cont);
-        String regex = "[\"\\s,.?!:]";
+        String regex = "[\"\\s,.?!:•]";
 
         String[] result = s.split(regex);
         for(int i = 0; i< result.length; i++){
@@ -207,7 +214,7 @@ public class KeywordsExtraction {
             p.add(changetoSet(splitwords(s)));
         }
         for(String word : w){
-            int count = 0;
+            int count = 1;
             for(HashSet<String> paraText : p){
                 if(paraText.contains(word)){
                     count++;
