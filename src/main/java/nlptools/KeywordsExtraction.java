@@ -18,8 +18,8 @@ public class KeywordsExtraction {
     private ArrayList<Set<String>> paratexts;
 
     public static void main(String[] args) throws Exception {
-        System.out.println("!!!" + KeywordsExtraction.class.getResource("/test.txt").getPath());
-        KeywordsExtraction k = new KeywordsExtraction(KeywordsExtraction.class.getResource("/test.txt").getPath(), true);
+        System.out.println("!!!" + KeywordsExtraction.class.getResource("/text1.txt").getPath());
+        KeywordsExtraction k = new KeywordsExtraction(KeywordsExtraction.class.getResource("/text1.txt").getPath(), true);
         ArrayList<String> keywords = k.getKeywords(20);
         for(String w : keywords){
             System.out.println(w);
@@ -42,7 +42,7 @@ public class KeywordsExtraction {
         if(useIDF) {
             HashMap<String, Float> result = new HashMap<>();
             for (String w : tfValues.keySet()) {
-                result.put(w, tfValues.get(w) * idfValues.get(w));
+                result.put(w, tfValues.get(w) *(3 + idfValues.get(w)));
             }
             return sortValue(result);
         } else {
@@ -51,7 +51,7 @@ public class KeywordsExtraction {
     }
 
     /**
-     *return most repeated top n words
+     *return most repeated top numbers of keywords
      */
     public ArrayList<String> getKeywords(int number){
         ArrayList<String> keywords = new ArrayList<>();
@@ -122,7 +122,7 @@ public class KeywordsExtraction {
         String regex0 = "[\\s\\p{Punct}]{2,}";
         s = s.replaceAll(regex0, ",");
         //System.out.println(cont);
-        String regex = "[\"\\s,.?!]";
+        String regex = "[\"\\s,.?!:]";
         return s.split(regex);
     }
 
