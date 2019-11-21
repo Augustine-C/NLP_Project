@@ -14,9 +14,10 @@ import java.util.*;
 public class KeywordsExtraction {
     private HashSet<String> commonWords;
     private List<Map.Entry<String, Float>> result;
-    private ArrayList<Set<String>> paratexts;
+    private ArrayList<String> paratexts;
     private String content;
     private Morphology mor;
+    private HashSet<String> entities;
 
     public static void main(String[] args) throws Exception {
         //System.out.println("!!!" + KeywordsExtraction.class.getResource("/test.txt").getPath());
@@ -28,14 +29,16 @@ public class KeywordsExtraction {
     }
 
     public KeywordsExtraction(String path, boolean useIDF) {
+        entities = new HashSet<>();
+
         mor = new Morphology();
         this.commonWords = new HashSet<>();
         loadCommonWords(KeywordsExtraction.class.getResource("/common.txt").getPath());
         content = readFromTxt(path);
+        addEntity(entities);
         String[] words = splitwords(content);
         HashMap<String, Float> tfValues = calculateTF(words);
         HashMap<String, Float> idfValues = calculateIDF(words);
-
         result = setResult(tfValues, idfValues, useIDF);
 //        for(Map.Entry e : result){
 //            System.out.println(e.getKey() + " " + e.getValue() + " " + tfValues.get(e.getKey()) + " idf: " + idfValues.get(e.getKey()));
@@ -74,7 +77,6 @@ public class KeywordsExtraction {
                     result.add(em.text());
                 }
             }
-
         }
     }
 
@@ -90,13 +92,11 @@ public class KeywordsExtraction {
             i++;
             try{
                 Integer.parseInt(keyword);
-
             } catch (NumberFormatException | NullPointerException nfe){
                 keywords.add(keyword);
                 count++;
             }
         }
-        addEntity(keywords);
         return keywords;
     }
 
@@ -126,7 +126,7 @@ public class KeywordsExtraction {
             String s = br.readLine();
             while (s != null) {
                 //s = s.toLowerCase();
-                paratexts.add(changetoSet(splitwords(s)));
+                paratexts.add(s);
                 content.append(s);
                 s = br.readLine();
             }
@@ -138,8 +138,8 @@ public class KeywordsExtraction {
         }
     }
 
-    private Set<String> changetoSet(String[] splitwords) {
-        Set<String> result = new HashSet<>();
+    private HashSet<String> changetoSet(String[] splitwords) {
+        HashSet<String> result = new HashSet<>();
         for(String s : splitwords){
             if(!commonWords.contains(s))
             result.add(s);
@@ -155,7 +155,9 @@ public class KeywordsExtraction {
 
         String[] result = s.split(regex);
         for(int i = 0; i< result.length; i++){
-            result[i] = mor.stem(result[i]);
+            if(!entities.contains(result[i])){
+                result[i] = mor.stem(result[i]);
+            }
         }
         return result;
     }
@@ -200,9 +202,13 @@ public class KeywordsExtraction {
         Set<String> w = changetoSet(words);
         HashMap<String, Integer> map = new HashMap<>();
         HashMap<String, Float> wordIDF = new HashMap<>();
+        ArrayList<HashSet<String>> p = new ArrayList<>();
+        for(String s : paratexts){
+            p.add(changetoSet(splitwords(s)));
+        }
         for(String word : w){
             int count = 0;
-            for(Set<String> paraText : paratexts){
+            for(HashSet<String> paraText : p){
                 if(paraText.contains(word)){
                     count++;
                 }
