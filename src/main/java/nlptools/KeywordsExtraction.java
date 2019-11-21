@@ -14,9 +14,8 @@ import java.util.*;
 
 public class KeywordsExtraction {
     private HashSet<String> commonWords;
-    private StanfordCoreNLP pipeline;
-    private Annotation doc;
     private List<Map.Entry<String, Float>> result;
+    private ArrayList<Set<String>> paratexts;
 
     public static void main(String[] args) throws Exception {
         System.out.println("!!!" + KeywordsExtraction.class.getResource("/test.txt").getPath());
@@ -30,18 +29,28 @@ public class KeywordsExtraction {
     public KeywordsExtraction(String path) {
         this.commonWords = new HashSet<>();
         loadCommonWords(KeywordsExtraction.class.getResource("/common.txt").getPath());
-        Properties props = new Properties();
-        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,depparse,natlog,openie");
-        doc = new Annotation(readFromTxt(path));
-        pipeline = new StanfordCoreNLP(props);
-        pipeline.annotate(doc);
-        HashMap<String, Float> values = calculateTF(splitwords(doc));
-        result = sortValue(values);
-        for(Map.Entry<String, Float> e : result){
-            System.out.println(e.getKey() + " " + e.getValue());
+        String[] words = splitwords(readFromTxt(path));
+        HashMap<String, Float> tfValues = calculateTF(words);
+        HashMap<String, Float> idfValues = calculateIDF(words);
+        result = setResult(tfValues, idfValues);
+        for(Map.Entry e : result){
+            System.out.println(e.getKey() + " " + e.getValue() + " " + tfValues.get(e.getKey()) + " idf: " + idfValues.get(e.getKey()));
         }
+//        result = sortValue(tfValues);
+//        for(Map.Entry e: sortValue(idfValues)){
+//            System.out.println(e.getValue() + " " + e.getKey());
+//        }
 
     }
+
+    private List<Map.Entry<String, Float>> setResult(HashMap<String, Float> tfValues, HashMap<String, Float> idfValues) {
+        HashMap<String, Float> result = new HashMap<>();
+        for(String w: tfValues.keySet()){
+            result.put(w, tfValues.get(w) * idfValues.get(w));
+        }
+        return sortValue(result);
+    }
+
     /**
      *return most repeated top n words
      */
@@ -70,20 +79,16 @@ public class KeywordsExtraction {
     }
 
     private String readFromTxt(String path) {
+        paratexts = new ArrayList<>();
         BufferedReader br;
         try {
-//            File file = new File(path);
-//
-//            InputStreamReader reader = new InputStreamReader
-//                    (new FileInputStream(file), "gbk");
-
             br = new BufferedReader(new FileReader(path));
             StringBuilder content = new StringBuilder();
 
             String s = br.readLine();
             while (s != null) {
+                paratexts.add(changetoSet(splitwords(s)));
                 content.append(s);
-                System.out.println(s);
                 s = br.readLine();
             }
             br.close();
@@ -94,37 +99,40 @@ public class KeywordsExtraction {
         }
     }
 
-    private ArrayList<String> splitwords(Annotation doc){
-        ArrayList<String> result = new ArrayList<>();
-        for (CoreMap sentence : doc.get(CoreAnnotations.SentencesAnnotation.class)){
-            for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)){
-                String word = token.get(CoreAnnotations.TextAnnotation.class);
-                if(!commonWords.contains(word)){
-                    result.add(word);
-                    //System.out.println(word);
-                }
-            }
+    private Set<String> changetoSet(String[] splitwords) {
+        Set<String> result = new HashSet<>();
+        for(String s : splitwords){
+            if(!commonWords.contains(s))
+            result.add(s);
         }
-        return result;
+        return  result;
     }
 
-    private HashMap<String, Float> calculateTF(ArrayList<String> words){
+    private String[] splitwords(String s){
+        String regex0 = "[\\s\\p{Punct}]{2,}";
+        s = s.replaceAll(regex0, ",");
+        //System.out.println(cont);
+        String regex = "[\"\\s,.?!]";
+        return s.split(regex);
+    }
+
+
+    private HashMap<String, Float> calculateTF(String[] words){
         HashMap<String, Integer> wordCount = new HashMap<>();
         HashMap<String, Float> TFValues = new HashMap<>();
         for(String word : words){
-            if(wordCount.get(word) == null){
-                wordCount.put(word, 1);
-            }
-            else {
-                wordCount.put(word, wordCount.get(word) + 1);
+            if(!commonWords.contains(word)) {
+                if (wordCount.get(word) == null) {
+                    wordCount.put(word, 1);
+                } else {
+                    wordCount.put(word, wordCount.get(word) + 1);
+                }
             }
         }
 
-        int wordLen = words.size();
+        int wordLen = words.length;
         //traverse the HashMap
-        Iterator<Map.Entry<String, Integer>> iter = wordCount.entrySet().iterator();
-        while(iter.hasNext()){
-            Map.Entry<String, Integer> entry = iter.next();
+        for (Map.Entry<String, Integer> entry : wordCount.entrySet()) {
             //System.out.println(entry.getKey() + " " + entry.getValue());
             TFValues.put(entry.getKey(), Float.parseFloat(entry.getValue().toString()) / wordLen);
             //System.out.println(entry.getKey().toString() + " = "+  Float.parseFloat(entry.getValue().toString()) / wordLen);
@@ -143,27 +151,26 @@ public class KeywordsExtraction {
         return result;
     }
 
-//    private  HashMap<String, Float> calculateIDF(ArrayList<String> words){
-//        HashSet<String> uwords = new HashSet<>();
-//
-//        HashMap<String, Integer> wordPassageNum = new HashMap<String, Integer>();
-//        for(String w : words){
-//            if(!commonWords.contains(w)) {
-//                uwords.add(w);
-//            }
-//        }
-//
-//        HashMap<String, Float> wordIDF = new HashMap<String, Float>();
-//        Iterator<Map.Entry<String, Integer>> iter_dict = wordPassageNum.entrySet().iterator();
-//        while(iter_dict.hasNext())
-//        {
-//            Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>)iter_dict.next();
-//            float value = (float)Math.log( 1 / (Float.parseFloat(entry.getValue().toString())) );
-//            wordIDF.put(entry.getKey().toString(), value);
-//            //System.out.println(entry.getKey().toString() + "=" +value);
-//        }
-//        return wordIDF;
-//    }
 
+    private HashMap<String, Float> calculateIDF(String[] words){
+        Set<String> w = changetoSet(words);
+        HashMap<String, Integer> map = new HashMap<>();
+        HashMap<String, Float> wordIDF = new HashMap<>();
+        for(String word : w){
+            int count = 0;
+            for(Set<String> paraText : paratexts){
+                if(paraText.contains(word)){
+                    count++;
+                }
+            }
+            map.put(word, count);
+        }
 
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            float value = (float) Math.log(paratexts.size() / (float)(entry.getValue()));
+            wordIDF.put(entry.getKey(), value);
+            //System.out.println(entry.getKey().toString() + "=" +value);
+        }
+        return wordIDF;
+    }
 }
