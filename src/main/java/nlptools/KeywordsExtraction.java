@@ -1,10 +1,9 @@
 package nlptools;
 
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.CoreDocument;
+import edu.stanford.nlp.pipeline.CoreEntityMention;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.util.CoreMap;
+import edu.stanford.nlp.process.Morphology;
 
 import java.io.*;
 import java.util.*;
@@ -16,22 +15,27 @@ public class KeywordsExtraction {
     private HashSet<String> commonWords;
     private List<Map.Entry<String, Float>> result;
     private ArrayList<Set<String>> paratexts;
+    private String content;
+    private Morphology mor;
 
     public static void main(String[] args) throws Exception {
-        System.out.println("!!!" + KeywordsExtraction.class.getResource("/text1.txt").getPath());
-        KeywordsExtraction k = new KeywordsExtraction(KeywordsExtraction.class.getResource("/text1.txt").getPath(), true);
-        ArrayList<String> keywords = k.getKeywords(20);
+        //System.out.println("!!!" + KeywordsExtraction.class.getResource("/test.txt").getPath());
+        KeywordsExtraction k = new KeywordsExtraction(KeywordsExtraction.class.getResource("/test.txt").getPath(), true);
+        Set<String> keywords = k.getKeywords(20);
         for(String w : keywords){
             System.out.println(w);
         }
     }
 
     public KeywordsExtraction(String path, boolean useIDF) {
+        mor = new Morphology();
         this.commonWords = new HashSet<>();
         loadCommonWords(KeywordsExtraction.class.getResource("/common.txt").getPath());
-        String[] words = splitwords(readFromTxt(path));
+        content = readFromTxt(path);
+        String[] words = splitwords(content);
         HashMap<String, Float> tfValues = calculateTF(words);
         HashMap<String, Float> idfValues = calculateIDF(words);
+
         result = setResult(tfValues, idfValues, useIDF);
 //        for(Map.Entry e : result){
 //            System.out.println(e.getKey() + " " + e.getValue() + " " + tfValues.get(e.getKey()) + " idf: " + idfValues.get(e.getKey()));
@@ -44,17 +48,41 @@ public class KeywordsExtraction {
             for (String w : tfValues.keySet()) {
                 result.put(w, tfValues.get(w) *(3 + idfValues.get(w)));
             }
+
             return sortValue(result);
         } else {
             return sortValue(tfValues);
         }
     }
 
+    private void addEntity(HashSet<String> result){
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,depparse,natlog,openie,ner");
+        props.setProperty("ner.applyFineGrained", "false");
+        //props.setProperty("ner.model", "PERSON, ORGANIZATION");
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+        CoreDocument cdoc = new CoreDocument(content);
+        pipeline.annotate(cdoc);
+        System.out.println("---");
+        System.out.println("entities found");
+        for (CoreEntityMention em : cdoc.entityMentions()) {
+            //result.add(em.text());
+            System.out.println("\tdetected entity: \t" + em.text() + "\t" + em.entityType());
+            if(em.entityType().equals("PERSON") || em.entityType().equals("ORGANIZATION") ){
+                if(!commonWords.contains(em.text())) {
+                    System.out.println("\tdetected entity: \t" + em.text() + "\t" + em.entityType());
+                    result.add(em.text());
+                }
+            }
+
+        }
+    }
+
     /**
-     *return most repeated top numbers of keywords
+     *return most repeated top numbers of keywords plus special entity names including companies and human names
      */
-    public ArrayList<String> getKeywords(int number){
-        ArrayList<String> keywords = new ArrayList<>();
+    public HashSet<String> getKeywords(int number){
+        HashSet<String> keywords = new HashSet<>();
         int i = 0;
         int count = 0;
         while (count < number){
@@ -68,6 +96,7 @@ public class KeywordsExtraction {
                 count++;
             }
         }
+        addEntity(keywords);
         return keywords;
     }
 
@@ -96,7 +125,7 @@ public class KeywordsExtraction {
 
             String s = br.readLine();
             while (s != null) {
-                s = s.toLowerCase();
+                //s = s.toLowerCase();
                 paratexts.add(changetoSet(splitwords(s)));
                 content.append(s);
                 s = br.readLine();
@@ -123,7 +152,12 @@ public class KeywordsExtraction {
         s = s.replaceAll(regex0, ",");
         //System.out.println(cont);
         String regex = "[\"\\s,.?!:]";
-        return s.split(regex);
+
+        String[] result = s.split(regex);
+        for(int i = 0; i< result.length; i++){
+            result[i] = mor.stem(result[i]);
+        }
+        return result;
     }
 
 
