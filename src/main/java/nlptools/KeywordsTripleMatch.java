@@ -11,6 +11,7 @@ import edu.stanford.nlp.process.Morphology;
 import edu.stanford.nlp.util.CoreMap;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.security.Key;
 import java.util.*;
@@ -29,18 +30,20 @@ public class KeywordsTripleMatch {
         // Get the texts from Article
         String articlePathString = NLP_triple.class.getResource("/DeepBlue.txt").getPath();
         String articleString = readFromTxt(articlePathString);
-        //articleString = cr.resolveCoreferences(articleString);
+        articleString = cr.resolveCoreferences(articleString);
+        System.out.println(articleString);
         HashMap<String, ArrayList<RelationTriple>> articlehm = parseTriple(pipeline, articleString);
 
         // Get the texts from Summary
         String summaryPathString = NLP_triple.class.getResource("/summary.txt").getPath();
         String summaryString = readFromTxt(summaryPathString);
         summaryString = cr.resolveCoreferences(summaryString);
+        System.out.println(summaryString);
         HashMap<String, ArrayList<RelationTriple>> summaryhm = parseTriple(pipeline, summaryString);
 
         // Get a group of keywords
         KeywordsExtraction ke = new KeywordsExtraction(articlePathString,true);
-        HashSet<String> keywords = ke.getKeywords(20);
+//        HashSet<String> keywords = ke.getKeywords();
 
         // Print the triples
 

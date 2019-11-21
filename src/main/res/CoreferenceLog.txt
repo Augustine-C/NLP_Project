@@ -1,0 +1,138 @@
+Summary:
+1.0	version	implement	range
+1.0	version	implement	wide range of improvement
+1.0	version	improve	speed
+1.0	version	be	successful
+1.0	version	implement	wide range
+1.0	version	improve	improve search software
+1.0	version	implement range	successful
+1.0	version	improve	search software
+1.0	version	implement	range of improvement
+Article:
+1.0	version	be	receive
+1.0	version	be receive in	January
+1.0	version	be receive in	January of 1996
+Summary:
+1.0	grandmaster	beat	machine
+1.0	grandmaster	struggle for	reason
+Article:
+1.0	grandmaster	be in	tournament play
+1.0	grandmaster	be	able
+Summary:
+1.0	we	have at_time	today
+Article:
+1.0	we	will refer to	1997 version
+1.0	we	will sometimes refer to	1997 version as Deep Blue II
+1.0	we	will sometimes refer to	1997 version
+1.0	we	will refer for	clarity
+1.0	we	will sometimes refer for	clarity
+1.0	we	will refer to	1997 version as Deep Blue II
+1.0	we	spend	majority of we time between two match
+1.0	we	spend	majority
+1.0	we	spend	vast majority of we time between two match
+1.0	we	spend	vast majority
+0.5436908265475425	we	vast majority of	we time between two match
+0.5436908265475425	we	majority of	we time
+1.0	we	spend	majority of we time
+0.5436908265475425	we	vast majority of	we time
+0.5436908265475425	we	majority of	we time between two match
+1.0	we	spend	vast majority of we time
+1.0	we	play	Garry Kasparov
+1.0	we	play	chess player
+1.0	we	play	chess player know
+1.0	we	play	chess player know for he complex
+1.0	we	want	sure
+1.0	we	will examine	each these
+1.0	we	will examine	each of these
+1.0	we	have	repeat position
+1.0	we	have	position
+1.0	we	credit with	extension
+1.0	we	call	dual credit with extension
+1.0	we	credit with	delay extension
+1.0	we	call	dual credit with delay extension
+1.0	we	dual credit with	delay extension
+1.0	we	call	credit
+1.0	we	call	dual credit
+1.0	we	call	credit with extension
+1.0	we	call	credit with delay extension
+1.0	we	dual credit with	extension
+1.0	we	have skip over	issue relate
+1.0	we	have skip over	issue
+1.0	we	simplify	description
+1.0	we	use	tremendous raw power
+1.0	we	use	tremendous raw search power
+1.0	we	use	tremendous raw power of Deep Blue
+1.0	we	use	raw search power of Deep Blue
+1.0	we	use	search power
+1.0	we	use	raw search power
+1.0	we	use	raw power of Deep Blue
+1.0	we	use	power
+1.0	we	use	power of Deep Blue
+1.0	we	use	search power of Deep Blue
+1.0	we	use	tremendous raw search power of Deep Blue
+1.0	we	use	tremendous power
+0.36651726788220995	we	use power	enable
+1.0	we	use	tremendous search power of Deep Blue
+1.0	we	use	tremendous search power
+1.0	we	use	raw power
+1.0	we	use	tremendous power of Deep Blue
+1.0	we	see	search
+1.0	we	typically see	search
+1.0	we	limit	chess chip
+1.0	we	strike	balance between speed of hardware search
+1.0	we	strike	balance between speed
+1.0	we	strike	balance
+1.0	we	will use	taxonomy give
+1.0	we	will use	taxonomy
+1.0	we	have limit	experimental result
+1.0	we	assess	efficiency of Deep Blue parallel search
+1.0	we	have limit	result
+1.0	we	assess	efficiency of Deep Blue search
+1.0	we	assess	efficiency
+1.0	we	compare	24 chip system
+1.0	we	will present	detailed example of one table
+1.0	we	will present	example
+1.0	we	will present	example of one table
+1.0	we	will present	detailed example
+1.0	we	now describe in	detail
+1.0	we	describe in	detail
+1.0	we	describe	feature
+1.0	we	develop	ad hoc function
+Summary:
+1.0	Deep Blue	version of	original
+Article:
+1.0	Deep Blue	trade	piece
+1.0	Deep Blue	trade piece in	position
+1.0	Deep Blue	handle well in	practice
+1.0	Deep Blue	in book be	6
+1.0	Deep Blue	carry out	search
+1.0	Deep Blue	first carry out	search
+1.0	Deep Blue	will go beyond	Deep Blue normal target
+1.0	Deep Blue	will go beyond	Deep Blue target
+1.0	Deep Blue	will go into	panic time
+Summary:
+1.0	search software	win	rate
+1.0	search software	win	rate of machine
+Article:
+1.0	search software	be	rewrite
+1.0	search software	be design	deal better
+1.0	search software	be	rewrite entirely
+1.0	search software	be design	deal with search
+1.0	search software	be rewrite for	Deep Thought 2
+1.0	search software	be design	deal better with search
+1.0	search software	be design	deal
+1.0	search software	be rewrite entirely for	Deep Thought 2
+1.0	search software	be	design
+1.0	search software	be design	deal better with parallel search
+1.0	search software	be design	deal with parallel search
+Summary:
+1.0	machine	even lose on	occasion
+1.0	machine	lose on	numerous occasion
+1.0	machine	even lose on	numerous occasion
+1.0	machine	lose on	occasion
+1.0	machine	compete with	world 's top chess player
+1.0	machine	compete with	world 's chess player
+1.0	machine	be	able
+Article:
+1.0	machine	be strive for	draw
+1.0	machine	avoid	draw
