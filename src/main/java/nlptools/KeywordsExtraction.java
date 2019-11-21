@@ -19,36 +19,35 @@ public class KeywordsExtraction {
 
     public static void main(String[] args) throws Exception {
         System.out.println("!!!" + KeywordsExtraction.class.getResource("/test.txt").getPath());
-        KeywordsExtraction k = new KeywordsExtraction(KeywordsExtraction.class.getResource("/test.txt").getPath());
+        KeywordsExtraction k = new KeywordsExtraction(KeywordsExtraction.class.getResource("/test.txt").getPath(), true);
         ArrayList<String> keywords = k.getKeywords(20);
         for(String w : keywords){
             System.out.println(w);
         }
     }
 
-    public KeywordsExtraction(String path) {
+    public KeywordsExtraction(String path, boolean useIDF) {
         this.commonWords = new HashSet<>();
         loadCommonWords(KeywordsExtraction.class.getResource("/common.txt").getPath());
         String[] words = splitwords(readFromTxt(path));
         HashMap<String, Float> tfValues = calculateTF(words);
         HashMap<String, Float> idfValues = calculateIDF(words);
-        result = setResult(tfValues, idfValues);
-        for(Map.Entry e : result){
-            System.out.println(e.getKey() + " " + e.getValue() + " " + tfValues.get(e.getKey()) + " idf: " + idfValues.get(e.getKey()));
-        }
-//        result = sortValue(tfValues);
-//        for(Map.Entry e: sortValue(idfValues)){
-//            System.out.println(e.getValue() + " " + e.getKey());
+        result = setResult(tfValues, idfValues, useIDF);
+//        for(Map.Entry e : result){
+//            System.out.println(e.getKey() + " " + e.getValue() + " " + tfValues.get(e.getKey()) + " idf: " + idfValues.get(e.getKey()));
 //        }
-
     }
 
-    private List<Map.Entry<String, Float>> setResult(HashMap<String, Float> tfValues, HashMap<String, Float> idfValues) {
-        HashMap<String, Float> result = new HashMap<>();
-        for(String w: tfValues.keySet()){
-            result.put(w, tfValues.get(w) * idfValues.get(w));
+    private List<Map.Entry<String, Float>> setResult(HashMap<String, Float> tfValues, HashMap<String, Float> idfValues, boolean useIDF) {
+        if(useIDF) {
+            HashMap<String, Float> result = new HashMap<>();
+            for (String w : tfValues.keySet()) {
+                result.put(w, tfValues.get(w) * idfValues.get(w));
+            }
+            return sortValue(result);
+        } else {
+            return sortValue(tfValues);
         }
-        return sortValue(result);
     }
 
     /**
@@ -56,8 +55,18 @@ public class KeywordsExtraction {
      */
     public ArrayList<String> getKeywords(int number){
         ArrayList<String> keywords = new ArrayList<>();
-        for(int i  = 0; i < number; i++){
-            keywords.add(result.get(i).getKey());
+        int i = 0;
+        int count = 0;
+        while (count < number){
+            String keyword = result.get(i).getKey();
+            i++;
+            try{
+                Integer.parseInt(keyword);
+
+            } catch (NumberFormatException | NullPointerException nfe){
+                keywords.add(keyword);
+                count++;
+            }
         }
         return keywords;
     }
@@ -87,6 +96,7 @@ public class KeywordsExtraction {
 
             String s = br.readLine();
             while (s != null) {
+                s = s.toLowerCase();
                 paratexts.add(changetoSet(splitwords(s)));
                 content.append(s);
                 s = br.readLine();
